@@ -18,6 +18,11 @@ import static org.junit.Assert.assertEquals;
 
 public class FilesystemDirectoryClassLoaderTest {
     @Test
+    public void handlesNonExistentClasses() {
+        // TODO Ensure non-existent classes don't cause infinite loop
+    }
+
+    @Test
     public void reloadsClasses() throws Exception {
         File sourceDirectory = new File(new File(System.getProperty("java.io.tmpdir")), "rel_"
                 + String.valueOf(System.currentTimeMillis()));

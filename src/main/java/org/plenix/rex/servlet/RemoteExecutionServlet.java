@@ -61,7 +61,7 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
         if (className != null) {
             Map<String, Object> parameters = buildParameters(request.getParameterMap());
             ServletExecutionContext remoteExecutionContext =
-                    new ServletExecutionContext(getServletContext(), this, response.getWriter());
+                    new ServletExecutionContext(request.getServletContext(), this, response.getWriter());
             executor.execute(className, parameters, remoteExecutionContext);
         }
     }
