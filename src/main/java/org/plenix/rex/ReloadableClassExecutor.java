@@ -15,7 +15,6 @@ public class ReloadableClassExecutor implements Executor {
     private File jarDirectory;
     private ClassLoader parentClassLoader;
 
-    private URL[] jarLibraries;
     private ClassLoader parentLastClassLoader;
 
     private static final Logger logger = LoggerFactory.getLogger(ReloadableClassExecutor.class);
@@ -33,18 +32,15 @@ public class ReloadableClassExecutor implements Executor {
         logger.debug("Loading class {}", className);
         // TODO Reload classes only on file change
         ClassLoader classLoader = new FilesystemDirectoryClassLoader(classDirectory, parentLastClassLoader);
+        @SuppressWarnings("unchecked")
         Executable<ExecutionContext> executable = (Executable<ExecutionContext>) classLoader.loadClass(className).newInstance();
 
         logger.debug("Executing class {}", className);
         executable.execute(parameters, context);
     }
 
-    public void refreshLibraries() {
-        scanLibraries();
-    }
-
-    private void scanLibraries() {
-        jarLibraries = ParentLastURLClassLoader.findJarLibraries(jarDirectory);
+    public void scanLibraries() {
+        URL[] jarLibraries = ParentLastURLClassLoader.findJarLibraries(jarDirectory);
         //parentLastClassLoader = new ParentLastURLClassLoader(jarLibraries, parentClassLoader);
         parentLastClassLoader = new URLClassLoader(jarLibraries, parentClassLoader);
     }

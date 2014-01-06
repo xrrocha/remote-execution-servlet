@@ -53,8 +53,8 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
     }
 
     private void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (Boolean.valueOf(request.getParameter("refreshLibraries"))) {
-            executor.refreshLibraries();
+        if (Boolean.valueOf(request.getParameter("scanLibraries"))) {
+            executor.scanLibraries();
         }
 
         String className = request.getParameter("className");
