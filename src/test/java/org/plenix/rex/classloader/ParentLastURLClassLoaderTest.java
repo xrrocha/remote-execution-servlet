@@ -13,9 +13,9 @@ import static org.junit.Assert.assertEquals;
 
 @Ignore
 public class ParentLastURLClassLoaderTest extends ClassLoaderTest {
-    private String packageName = "com.acme";
-    private String className = "Test";
-    private String codeTemplate = "public String toString() { return \"%s\"; }";
+    private final String packageName = "com.acme";
+    private final String className = "Test";
+    private final String codeTemplate = "public String toString() { return \"%s\"; }";
 
     @Test
     public void loadsClassFromLibraries() throws Exception {

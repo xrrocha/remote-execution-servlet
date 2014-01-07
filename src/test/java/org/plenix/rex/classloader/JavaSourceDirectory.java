@@ -42,7 +42,6 @@ public class JavaSourceDirectory {
             out.println(sourceCode);
             out.println("}");
         }
-        ;
     }
 
     public void addFile(String packageName, String filename, InputStream in) throws IOException {

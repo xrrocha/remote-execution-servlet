@@ -2,6 +2,6 @@ package org.plenix.rex;
 
 import java.util.Map;
 
-public interface Executable<C extends ExecutionContext> {
+public interface Executable<C> {
     void execute(Map<String, Object> parameters, C context) throws Exception;
 }

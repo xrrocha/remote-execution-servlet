@@ -14,9 +14,9 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class RemoteExecutionServlet extends HttpServlet implements ServletMapper {
-    private final ReloadableClassExecutor executor;
+    private final ReloadableClassExecutor<ServletExecutionContext> executor;
 
-    private Map<String, RequestHandler> handlers = new HashMap<>();
+    private final Map<String, RequestHandler> handlers = new HashMap<>();
 
     private static final Set<String> reservedParameterNames =
             new HashSet<>(Arrays.asList(new String[]{"className", "refreshLibraries"}));
@@ -24,7 +24,7 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
     private static final Logger logger = LoggerFactory.getLogger(RemoteExecutionServlet.class);
 
     public RemoteExecutionServlet(File classDirectory, File jarDirectory, ClassLoader parentClassLoader) {
-        executor = new ReloadableClassExecutor(classDirectory, jarDirectory, parentClassLoader);
+        executor = new ReloadableClassExecutor<ServletExecutionContext>(classDirectory, jarDirectory, parentClassLoader);
     }
 
     @Override
@@ -60,9 +60,9 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
         String className = request.getParameter("className");
         if (className != null) {
             Map<String, Object> parameters = buildParameters(request.getParameterMap());
-            ServletExecutionContext remoteExecutionContext =
+            ServletExecutionContext context =
                     new ServletExecutionContext(request.getServletContext(), this, response.getWriter());
-            executor.execute(className, parameters, remoteExecutionContext);
+            executor.execute(className, parameters, context);
         }
     }
 

@@ -1,14 +1,12 @@
 package org.plenix.rex.servlet;
 
-import org.plenix.rex.ExecutionContext;
-
 import javax.servlet.ServletContext;
 import java.io.PrintWriter;
 
-public class ServletExecutionContext implements ExecutionContext {
-    private ServletContext servletContext;
-    private ServletMapper servletMapper;
-    private PrintWriter out;
+public class ServletExecutionContext {
+    private final ServletContext servletContext;
+    private final ServletMapper servletMapper;
+    private final PrintWriter out;
 
     public ServletExecutionContext(ServletContext servletContext, ServletMapper servletMapper, PrintWriter out) {
         this.servletContext = servletContext;

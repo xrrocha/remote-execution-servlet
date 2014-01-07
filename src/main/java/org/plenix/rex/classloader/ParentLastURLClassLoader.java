@@ -14,7 +14,7 @@ import java.util.List;
  * For those not familiar with class loading trickery, be wary
  */
 public class ParentLastURLClassLoader extends ClassLoader {
-    private ChildURLClassLoader childClassLoader;
+    private final ChildURLClassLoader childClassLoader;
 
     /**
      * This class allows me to call findClass on a classloader
@@ -35,7 +35,7 @@ public class ParentLastURLClassLoader extends ClassLoader {
      * protected in URLClassLoader
      */
     private static class ChildURLClassLoader extends URLClassLoader {
-        private FindClassClassLoader realParent;
+        private final FindClassClassLoader realParent;
 
         public ChildURLClassLoader(URL[] urls, FindClassClassLoader realParent) {
             super(urls, null);
@@ -55,7 +55,7 @@ public class ParentLastURLClassLoader extends ClassLoader {
         }
     }
 
-    public ParentLastURLClassLoader(File directory, ClassLoader parent) throws MalformedURLException {
+    public ParentLastURLClassLoader(File directory, ClassLoader parent) {
         this(findJarLibraries(directory), parent);
     }
 

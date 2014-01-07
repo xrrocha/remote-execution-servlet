@@ -10,10 +10,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 
-public class ReloadableClassExecutor implements Executor {
-    private File classDirectory;
-    private File jarDirectory;
-    private ClassLoader parentClassLoader;
+public class ReloadableClassExecutor<C> implements Executor<C> {
+    private final File classDirectory;
+    private final File jarDirectory;
+    private final ClassLoader parentClassLoader;
 
     private ClassLoader parentLastClassLoader;
 
@@ -28,12 +28,12 @@ public class ReloadableClassExecutor implements Executor {
     }
 
     @Override
-    public void execute(String className, Map<String, Object> parameters, ExecutionContext context) throws Exception {
+    public void execute(String className, Map<String, Object> parameters, C context) throws Exception {
         logger.debug("Loading class {}", className);
         // TODO Reload classes only on file change
         ClassLoader classLoader = new FilesystemDirectoryClassLoader(classDirectory, parentLastClassLoader);
         @SuppressWarnings("unchecked")
-        Executable<ExecutionContext> executable = (Executable<ExecutionContext>) classLoader.loadClass(className).newInstance();
+        Executable<C> executable = (Executable<C>) classLoader.loadClass(className).newInstance();
 
         logger.debug("Executing class {}", className);
         executable.execute(parameters, context);
