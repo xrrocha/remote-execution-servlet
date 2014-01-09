@@ -7,8 +7,8 @@ import javax.tools.ToolProvider;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
 
 public class JavaSourceDirectory {
     private final File sourceDirectory;
@@ -77,19 +77,19 @@ public class JavaSourceDirectory {
             }
         });
 
-        try (ZipOutputStream zos = new ZipOutputStream(destination)) {
+        try (JarOutputStream jos = new JarOutputStream(destination)) {
             for (File resourceFile : resourceFiles) {
-                String resourceFilename = resourceFile.getAbsolutePath();
-
-                ZipEntry zipEntry =
-                        new ZipEntry(resourceFilename.substring(baseFilename.length() + 1, resourceFilename.length()));
-                zos.putNextEntry(zipEntry);
+                String absolutePath = resourceFile.getAbsolutePath().replace("\\", "/");
+                String filename = absolutePath.substring(baseFilename.length() + 1, absolutePath.length());
+                JarEntry jarEntry = new JarEntry(filename);
+                jarEntry.setTime(resourceFile.lastModified());
+                jos.putNextEntry(jarEntry);
                 try (InputStream is = new FileInputStream(resourceFile)) {
-                    copy(is, zos);
+                    copy(is, jos);
                 }
-                zos.closeEntry();
+                jos.closeEntry();
             }
-            zos.finish();
+            //jos.finish();
         }
     }
 

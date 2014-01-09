@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Map;
 
 public class ReloadableClassExecutor<C> implements Executor<C> {
@@ -40,8 +38,6 @@ public class ReloadableClassExecutor<C> implements Executor<C> {
     }
 
     public void scanLibraries() {
-        URL[] jarLibraries = ParentLastURLClassLoader.findJarLibraries(jarDirectory);
-        //parentLastClassLoader = new ParentLastURLClassLoader(jarLibraries, parentClassLoader);
-        parentLastClassLoader = new URLClassLoader(jarLibraries, parentClassLoader);
+        parentLastClassLoader = new ParentLastURLClassLoader(jarDirectory, parentClassLoader);
     }
 }
