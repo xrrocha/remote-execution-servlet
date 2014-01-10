@@ -7,6 +7,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO Add closing of jar files
 public class ParentLastURLClassLoader extends URLClassLoader {
     public ParentLastURLClassLoader(File directory, ClassLoader parent) {
         this(findJarLibraries(directory), parent);
