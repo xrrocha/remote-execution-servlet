@@ -1,4 +1,4 @@
-package org.plenix.rex.classloader;
+package xrrocha.rex.classloader;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;

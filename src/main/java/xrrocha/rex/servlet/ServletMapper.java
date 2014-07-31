@@ -1,4 +1,4 @@
-package org.plenix.rex.servlet;
+package xrrocha.rex.servlet;
 
 public interface ServletMapper {
     void addMapping(String path, RequestHandler handler);

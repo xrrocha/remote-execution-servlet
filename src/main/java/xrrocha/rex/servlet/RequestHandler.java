@@ -1,4 +1,4 @@
-package org.plenix.rex.servlet;
+package xrrocha.rex.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

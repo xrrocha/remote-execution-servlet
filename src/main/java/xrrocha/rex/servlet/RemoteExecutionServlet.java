@@ -1,6 +1,6 @@
-package org.plenix.rex.servlet;
+package xrrocha.rex.servlet;
 
-import org.plenix.rex.ReloadableClassExecutor;
+import xrrocha.rex.ReloadableClassExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +57,7 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
             executor.scanLibraries();
         }
 
+        // FIXME Decouple execution semantics from class-based impl strategy
         String className = request.getParameter("className");
         if (className != null) {
             Map<String, Object> parameters = buildParameters(request.getParameterMap());

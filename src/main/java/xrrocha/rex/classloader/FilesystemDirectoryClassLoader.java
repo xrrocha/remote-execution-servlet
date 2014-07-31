@@ -1,4 +1,4 @@
-package org.plenix.rex.classloader;
+package xrrocha.rex.classloader;
 
 import java.io.DataInputStream;
 import java.io.File;

@@ -1,6 +1,7 @@
-package org.plenix.rex.classloader;
+package xrrocha.rex.classloader;
 
 import org.junit.Test;
+import xrrocha.rex.classloader.FilesystemDirectoryClassLoader;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;

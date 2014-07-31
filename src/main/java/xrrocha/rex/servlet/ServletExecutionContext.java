@@ -1,4 +1,4 @@
-package org.plenix.rex.servlet;
+package xrrocha.rex.servlet;
 
 import javax.servlet.ServletContext;
 import java.io.PrintWriter;
