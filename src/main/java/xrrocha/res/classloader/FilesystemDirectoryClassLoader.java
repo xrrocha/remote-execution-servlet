@@ -1,4 +1,4 @@
-package xrrocha.rex.classloader;
+package xrrocha.res.classloader;
 
 import java.io.DataInputStream;
 import java.io.File;

@@ -1,9 +1,7 @@
-package xrrocha.rex.servlet;
+package xrrocha.res.servlet;
 
-import xrrocha.rex.classloader.FilesystemDirectoryClassLoader;
-import xrrocha.rex.classloader.ParentLastURLClassLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import xrrocha.res.classloader.FilesystemDirectoryClassLoader;
+import xrrocha.res.classloader.ParentLastURLClassLoader;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -11,9 +9,10 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServlet;
 import java.io.*;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class RemoteExecutionListener implements ServletContextListener {
-    private static final Logger logger = LoggerFactory.getLogger(RemoteExecutionListener.class);
+    private static final Logger logger = Logger.getLogger(RemoteExecutionListener.class.getName());
 
     private Object mole;
 
@@ -23,9 +22,10 @@ public class RemoteExecutionListener implements ServletContextListener {
         ServletContext servletContext = sce.getServletContext();
 
         try {
-            String configurationLocation = servletContext.getInitParameter("rex.configuration");
+            String configurationLocation = servletContext.getInitParameter("res.configuration");
             Properties properties = loadConfiguration(configurationLocation);
 
+            // FIXME Class and/or jar directories should be optional
             File classDirectory = new File(getProperty("classDirectory", properties));
             File jarDirectory = new File(getProperty("jarDirectory", properties));
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -49,18 +49,18 @@ public class RemoteExecutionListener implements ServletContextListener {
                     Properties subProperties = subProperties(properties, "mole.");
                     copyProperties(subProperties, moleProperties);
 
-                    moleProperties.put("relServlet", servlet);
-                    moleProperties.put("relContext", servletContext);
+                    moleProperties.put("resServlet", servlet);
+                    moleProperties.put("resContext", servletContext);
                 }
 
-                logger.info("Starting mole");
                 if (mole instanceof Runnable) {
+                    logger.info("Starting mole");
                     ((Runnable) mole).run();
                 }
             }
         } catch (Exception e) {
             String errorMessage = "Error during listener initialization: " + e;
-            logger.error(errorMessage, e);
+            logger.severe(errorMessage);
             throw new IllegalStateException(errorMessage, e);
         }
     }
@@ -70,9 +70,10 @@ public class RemoteExecutionListener implements ServletContextListener {
 
         if (mole != null && mole instanceof Closeable) {
             try {
+                logger.info("Stopping mole");
                 ((Closeable) mole).close();
             } catch (Exception e) {
-                logger.warn("Exception closing REL mole: " + e);
+                logger.warning("Exception closing REL mole: " + e);
             }
         }
     }

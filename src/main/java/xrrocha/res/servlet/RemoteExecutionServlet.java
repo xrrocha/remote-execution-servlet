@@ -1,8 +1,6 @@
-package xrrocha.rex.servlet;
+package xrrocha.res.servlet;
 
-import xrrocha.rex.ReloadableClassExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import xrrocha.res.ReloadableClassExecutor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
 public class RemoteExecutionServlet extends HttpServlet implements ServletMapper {
@@ -21,21 +21,23 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
     private static final Set<String> reservedParameterNames =
             new HashSet<>(Arrays.asList(new String[]{"className", "refreshLibraries"}));
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoteExecutionServlet.class);
+    private static final Logger logger = Logger.getLogger(RemoteExecutionServlet.class.getName());
 
     public RemoteExecutionServlet(File classDirectory, File jarDirectory, ClassLoader parentClassLoader) {
-        executor = new ReloadableClassExecutor<ServletExecutionContext>(classDirectory, jarDirectory, parentClassLoader);
+        executor = new ReloadableClassExecutor<>(classDirectory, jarDirectory, parentClassLoader);
     }
 
     @Override
     public void init(ServletConfig servletConfig) {
-        logger.debug("Initializing servlet");
+        if (logger.isLoggable(Level.INFO))
+            logger.finest("Initializing servlet");
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
-        logger.debug("Servicing path: " + path);
+        if (logger.isLoggable(Level.INFO))
+            logger.finest("Servicing path: " + path);
 
         try {
             if (path == null || path.length() == 1) {
@@ -45,7 +47,7 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
             }
         } catch (Exception e) {
             String errorMessage = "Error servicing request " + (path == null ? "" : path) + ": " + e;
-            logger.warn(errorMessage, e);
+            logger.warning(errorMessage);
             response.getWriter().println(errorMessage);
         }
 
@@ -70,7 +72,7 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
     private void handle(String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
         RequestHandler handler = handlers.get(path);
         if (handler == null) {
-            logger.warn("No suitable handler for " + path);
+            logger.warning("No suitable handler for " + path);
         } else {
             handler.handle(request, response);
         }

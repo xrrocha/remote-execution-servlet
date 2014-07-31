@@ -1,4 +1,4 @@
-package xrrocha.rex.classloader;
+package xrrocha.res.classloader;
 
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class ParentLastURLClassLoaderTest extends ClassLoaderTest {
 
         JavaSourceDirectory childDirectory = new JavaSourceDirectory(newTemporaryDirectory());
         createSourceFile(childDirectory, "child");
-        File jarFile = File.createTempFile("rex", ".jar");
+        File jarFile = File.createTempFile("res", ".jar");
         childDirectory.buildJarLibrary(new FileOutputStream(jarFile));
         ClassLoader childClassLoader = new ParentLastURLClassLoader(
                 new URL[]{jarFile.toURI().toURL()},

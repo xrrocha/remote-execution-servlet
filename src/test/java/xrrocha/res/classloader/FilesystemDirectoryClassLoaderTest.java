@@ -1,7 +1,6 @@
-package xrrocha.rex.classloader;
+package xrrocha.res.classloader;
 
 import org.junit.Test;
-import xrrocha.rex.classloader.FilesystemDirectoryClassLoader;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -25,7 +24,7 @@ public class FilesystemDirectoryClassLoaderTest {
 
     @Test
     public void reloadsClasses() throws Exception {
-        File sourceDirectory = new File(new File(System.getProperty("java.io.tmpdir")), "rel_"
+        File sourceDirectory = new File(new File(System.getProperty("java.io.tmpdir")), "res_"
                 + String.valueOf(System.currentTimeMillis()));
         sourceDirectory.mkdir();
 

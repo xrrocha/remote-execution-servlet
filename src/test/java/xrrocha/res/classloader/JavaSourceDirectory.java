@@ -1,4 +1,4 @@
-package xrrocha.rex.classloader;
+package xrrocha.res.classloader;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;

@@ -1,4 +1,4 @@
-package xrrocha.rex.servlet;
+package xrrocha.res.servlet;
 
 import javax.servlet.ServletContext;
 import java.io.PrintWriter;

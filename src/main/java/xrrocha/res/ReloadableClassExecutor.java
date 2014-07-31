@@ -1,9 +1,10 @@
-package xrrocha.rex;
+package xrrocha.res;
 
-import xrrocha.rex.classloader.FilesystemDirectoryClassLoader;
-import xrrocha.rex.classloader.ParentLastURLClassLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import xrrocha.res.classloader.FilesystemDirectoryClassLoader;
+import xrrocha.res.classloader.ParentLastURLClassLoader;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.File;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class ReloadableClassExecutor<C> implements Executor<C> {
 
     private ClassLoader parentLastClassLoader;
 
-    private static final Logger logger = LoggerFactory.getLogger(ReloadableClassExecutor.class);
+    private static final Logger logger = Logger.getLogger(ReloadableClassExecutor.class.getName());
 
     public ReloadableClassExecutor(File classDirectory, File jarDirectory, ClassLoader parentClassLoader) {
         this.classDirectory = classDirectory;
@@ -27,13 +28,15 @@ public class ReloadableClassExecutor<C> implements Executor<C> {
 
     @Override
     public void execute(String className, Map<String, Object> parameters, C context) throws Exception {
-        logger.debug("Loading class {}", className);
+        if (logger.isLoggable(Level.INFO))
+            logger.finest("Loading class " + className);
         // TODO Reload classes only on file change
         ClassLoader classLoader = new FilesystemDirectoryClassLoader(classDirectory, parentLastClassLoader);
         @SuppressWarnings("unchecked")
         Executable<C> executable = (Executable<C>) classLoader.loadClass(className).newInstance();
 
-        logger.debug("Executing class {}", className);
+        if (logger.isLoggable(Level.INFO))
+            logger.finest("Executing class " + className);
         executable.execute(parameters, context);
     }
 

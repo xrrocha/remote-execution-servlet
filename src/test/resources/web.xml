@@ -8,10 +8,10 @@
 	<display-name>webapp</display-name>
 
     <context-param>
-        <param-name>rel.configuration</param-name>
-        <param-value>/home/rel/workspaces/webapp/src/main/webapp/WEB-INF/rel.properties</param-value>
+        <param-name>res.configuration</param-name>
+        <param-value>/home/res/workspaces/webapp/src/main/webapp/WEB-INF/res.properties</param-value>
     </context-param>
     <listener>
-        <listener-class>org.plenix.rel.RemoteExecutorListener</listener-class>
+        <listener-class>xrrocha.res.RemoteExecutorListener</listener-class>
     </listener>
 </web-app>

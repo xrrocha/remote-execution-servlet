@@ -1,4 +1,4 @@
-package xrrocha.rex;
+package xrrocha.res;
 
 import java.util.Map;
 
