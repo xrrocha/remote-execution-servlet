@@ -59,7 +59,6 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
             executor.scanLibraries();
         }
 
-        // FIXME Decouple execution semantics from class-based impl strategy
         String className = request.getParameter("className");
         if (className != null) {
             Map<String, Object> parameters = buildParameters(request.getParameterMap());

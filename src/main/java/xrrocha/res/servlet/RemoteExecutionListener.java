@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import java.io.*;
 import java.util.Properties;
 import java.util.logging.Logger;
+import static xrrocha.res.util.PropertyUtils.*;
 
 public class RemoteExecutionListener implements ServletContextListener {
     private static final Logger logger = Logger.getLogger(RemoteExecutionListener.class.getName());
@@ -23,7 +24,7 @@ public class RemoteExecutionListener implements ServletContextListener {
 
         try {
             String configurationLocation = servletContext.getInitParameter("res.configuration");
-            Properties properties = loadConfiguration(configurationLocation);
+            Properties properties = loadProperties(configurationLocation);
 
             // FIXME Class and/or jar directories should be optional
             File classDirectory = new File(getProperty("classDirectory", properties));
@@ -73,40 +74,8 @@ public class RemoteExecutionListener implements ServletContextListener {
                 logger.info("Stopping mole");
                 ((Closeable) mole).close();
             } catch (Exception e) {
-                logger.warning("Exception closing REL mole: " + e);
+                logger.warning("Exception closing RES mole: " + e);
             }
-        }
-    }
-
-    static Properties loadConfiguration(String configurationLocation) throws IOException {
-        InputStream is = new FileInputStream(configurationLocation);
-        Properties properties = new Properties();
-        properties.load(is);
-        return properties;
-    }
-
-    static String getProperty(String propertyName, Properties properties) {
-        String propertyValue = properties.getProperty(propertyName);
-        if (propertyValue == null) {
-            throw new IllegalArgumentException("No such property: " + propertyName);
-        }
-        return propertyValue.trim();
-    }
-
-    static Properties subProperties(Properties properties, String prefix) {
-        Properties subProperties = new Properties();
-        for (String propertyName: properties.stringPropertyNames()) {
-            if (propertyName.startsWith(prefix)) {
-                String propertyValue = properties.getProperty(propertyName);
-                subProperties.setProperty(propertyName, propertyValue.substring(prefix.length()));
-            }
-        }
-        return subProperties;
-    }
-
-    static void copyProperties(Properties from, Properties to) {
-        for (String propertyName: from.stringPropertyNames()) {
-            to.setProperty(propertyName, from.getProperty(propertyName));
         }
     }
 }
