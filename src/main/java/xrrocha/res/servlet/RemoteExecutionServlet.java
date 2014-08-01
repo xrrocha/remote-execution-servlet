@@ -13,9 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("serial")
+// TODO Restore named class execution after fixing filesystem-based class loader
 public class RemoteExecutionServlet extends HttpServlet implements ServletMapper {
-    private final ReloadableClassExecutor<ServletExecutionContext> executor;
-
     private final Map<String, RequestHandler> handlers = new HashMap<>();
 
     private static final Set<String> reservedParameterNames =
@@ -23,25 +22,26 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
 
     private static final Logger logger = Logger.getLogger(RemoteExecutionServlet.class.getName());
 
-    public RemoteExecutionServlet(File classDirectory, File jarDirectory, ClassLoader parentClassLoader) {
-        executor = new ReloadableClassExecutor<>(classDirectory, jarDirectory, parentClassLoader);
+    public RemoteExecutionServlet(/*File classDirectory, File jarDirectory, ClassLoader parentClassLoader*/) {
+        //executor = new ReloadableClassExecutor<>(classDirectory, jarDirectory, parentClassLoader);
     }
 
     @Override
     public void init(ServletConfig servletConfig) {
-        if (logger.isLoggable(Level.INFO))
+        if (logger.isLoggable(Level.FINEST))
             logger.finest("Initializing servlet");
     }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String path = request.getPathInfo();
-        if (logger.isLoggable(Level.INFO))
+        if (logger.isLoggable(Level.FINEST))
             logger.finest("Servicing path: " + path);
 
         try {
             if (path == null || path.length() == 1) {
-                execute(request, response);
+                logger.warning("Won't handle empty path");
+                //execute(request, response);
             } else {
                 handle(path.substring(1), request, response);
             }
@@ -52,20 +52,6 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
         }
 
         response.getWriter().flush();
-    }
-
-    private void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (Boolean.valueOf(request.getParameter("scanLibraries"))) {
-            executor.scanLibraries();
-        }
-
-        String className = request.getParameter("className");
-        if (className != null) {
-            Map<String, Object> parameters = buildParameters(request.getParameterMap());
-            ServletExecutionContext context =
-                    new ServletExecutionContext(request.getServletContext(), this, response.getWriter());
-            executor.execute(className, parameters, context);
-        }
     }
 
     private void handle(String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -95,5 +81,23 @@ public class RemoteExecutionServlet extends HttpServlet implements ServletMapper
             }
         }
         return parameters;
+    }
+
+    @SuppressWarnings("unused")
+    private /*final*/ ReloadableClassExecutor<ServletExecutionContext> executor;
+
+    @SuppressWarnings("unused")
+    private void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (Boolean.valueOf(request.getParameter("scanLibraries"))) {
+            executor.scanLibraries();
+        }
+
+        String className = request.getParameter("className");
+        if (className != null) {
+            Map<String, Object> parameters = buildParameters(request.getParameterMap());
+            ServletExecutionContext context =
+                    new ServletExecutionContext(request.getServletContext(), this, response.getWriter());
+            executor.execute(className, parameters, context);
+        }
     }
 }

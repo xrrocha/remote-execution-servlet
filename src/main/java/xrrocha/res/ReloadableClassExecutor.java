@@ -28,14 +28,14 @@ public class ReloadableClassExecutor<C> implements Executor<C> {
 
     @Override
     public void execute(String className, Map<String, Object> parameters, C context) throws Exception {
-        if (logger.isLoggable(Level.INFO))
+        if (logger.isLoggable(Level.FINEST))
             logger.finest("Loading class " + className);
         // TODO Reload classes only on file change
         ClassLoader classLoader = new FilesystemDirectoryClassLoader(classDirectory, parentLastClassLoader);
         @SuppressWarnings("unchecked")
         Executable<C> executable = (Executable<C>) classLoader.loadClass(className).newInstance();
 
-        if (logger.isLoggable(Level.INFO))
+        if (logger.isLoggable(Level.FINEST))
             logger.finest("Executing class " + className);
         executable.execute(parameters, context);
     }

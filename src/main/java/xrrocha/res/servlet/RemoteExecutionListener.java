@@ -8,9 +8,15 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpServlet;
 import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import static xrrocha.res.util.PropertyUtils.*;
+
+import static xrrocha.res.util.ClassLoaderUtils.*;
 
 public class RemoteExecutionListener implements ServletContextListener {
     private static final Logger logger = Logger.getLogger(RemoteExecutionListener.class.getName());
@@ -26,13 +32,18 @@ public class RemoteExecutionListener implements ServletContextListener {
             String configurationLocation = servletContext.getInitParameter("res.configuration");
             Properties properties = loadProperties(configurationLocation);
 
-            // FIXME Class and/or jar directories should be optional
-            File classDirectory = new File(getProperty("classDirectory", properties));
-            File jarDirectory = new File(getProperty("jarDirectory", properties));
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            List<File> jarDirectories = getDirectories(properties.getProperty("jarDirectories"));
+            List<File> classDirectories = getDirectories(properties.getProperty("classDirectories"));
+            if (jarDirectories.size() == 0 && classDirectories.size() == 0) {
+                throw new IllegalArgumentException("At least one of 'jarDirectories' and 'classDirectories' must be specified");
+            }
 
-            HttpServlet servlet = new RemoteExecutionServlet(classDirectory, jarDirectory, contextClassLoader);
-            String servletMapping = getProperty("servletMapping", properties);
+            URL[] urls = collectUrls(jarDirectories, classDirectories);
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            ClassLoader classLoader = new ParentLastURLClassLoader(urls, contextClassLoader);
+
+            HttpServlet servlet = new RemoteExecutionServlet(/*classDirectories, jarDirectories, contextClassLoader*/);
+            String servletMapping = getRequiredProperty("servletMapping", properties);
             logger.info("Mapping remote execution servlet to " + servletMapping);
             servletContext
                     .addServlet("RemoteExecutionServlet", servlet)
@@ -40,11 +51,13 @@ public class RemoteExecutionListener implements ServletContextListener {
 
             String moleClass = properties.getProperty("moleClass");
             if (moleClass != null) {
-                ClassLoader parentClassLoader = new ParentLastURLClassLoader(jarDirectory, contextClassLoader);
-                ClassLoader classLoader = new FilesystemDirectoryClassLoader(classDirectory, parentClassLoader);
-                Object mole = classLoader.loadClass(moleClass);
+                if (logger.isLoggable(Level.FINEST))
+                    logger.finest("Loading mole class: " + moleClass);
+                Object mole = classLoader.loadClass(moleClass).newInstance();
 
                 if (mole instanceof Properties) {
+                    if (logger.isLoggable(Level.FINEST))
+                        logger.finest("Mole class extends Properties");
                     Properties moleProperties = (Properties) mole;
 
                     Properties subProperties = subProperties(properties, "mole.");
@@ -77,5 +90,21 @@ public class RemoteExecutionListener implements ServletContextListener {
                 logger.warning("Exception closing RES mole: " + e);
             }
         }
+    }
+
+    static List<File> getDirectories(String directoryList) {
+        List<File> directories = new ArrayList<>();
+        if (directoryList != null) {
+            String[] directoryNames = directoryList.trim().split("\\s*,\\s*");
+            for (int i = 0; i < directoryNames.length; i++) {
+                File directory = new File(directoryNames[i]);
+                if (directory.isDirectory() && directory.canRead()) {
+                    directories.add(directory.getAbsoluteFile());
+                } else {
+                    logger.warning("Inaccessible directory: " + directory.getAbsolutePath());
+                }
+            }
+        }
+        return directories;
     }
 }

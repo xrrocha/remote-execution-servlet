@@ -1,23 +1,24 @@
 package xrrocha.res.classloader;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
 
+import static xrrocha.res.util.ClassLoaderUtils.findJarLibraries;
+
+// TODO Verify resource loading
 // TODO Add closing of jar files
 public class ParentLastURLClassLoader extends URLClassLoader {
-    public ParentLastURLClassLoader(File directory, ClassLoader parent) {
-        this(findJarLibraries(directory), parent);
-    }
-
     private ClassLoader parent;
 
     public ParentLastURLClassLoader(URL[] urls, ClassLoader parent) {
         super(urls, null);
         this.parent = parent;
+    }
+
+    // Currently used only by ReloadableClassExecutor
+    public ParentLastURLClassLoader(File jarDirectory, ClassLoader parent) {
+        this(findJarLibraries(jarDirectory), parent);
     }
 
     @Override
@@ -42,35 +43,11 @@ public class ParentLastURLClassLoader extends URLClassLoader {
     }
 
     @Override
-    public URL getResource(String name) { // TODO Override getResources
+    public URL getResource(String name) {
         URL url = super.findResource(name);
         if (url == null) {
             url = this.parent.getResource(name);
         }
         return url;
-    }
-
-    public static URL[] findJarLibraries(File directory) {
-        if (!directory.isDirectory() && directory.canRead()) {
-            throw new IllegalArgumentException("Not a readable directory: " + directory.getAbsolutePath());
-        }
-
-        List<URL> urls = new ArrayList<>();
-        findJarLibraries(directory, urls);
-        return urls.toArray(new URL[urls.size()]);
-    }
-
-    static void findJarLibraries(File directory, List<URL> libraries) {
-        for (File file : directory.listFiles()) {
-            if (file.isFile() && file.getName().endsWith(".jar")) {
-                try {
-                    libraries.add(file.toURI().toURL());
-                } catch (MalformedURLException e) {
-                    throw new IllegalStateException("Error converting file to URL: " + e, e);
-                }
-            } else if (file.isDirectory()) {
-                findJarLibraries(file, libraries);
-            }
-        }
     }
 }

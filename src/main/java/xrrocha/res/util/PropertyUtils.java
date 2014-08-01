@@ -13,7 +13,7 @@ public class PropertyUtils {
         return properties;
     }
 
-    public static String getProperty(String propertyName, Properties properties) {
+    public static String getRequiredProperty(String propertyName, Properties properties) {
         String propertyValue = properties.getProperty(propertyName);
         if (propertyValue == null) {
             throw new IllegalArgumentException("No such property: " + propertyName);
@@ -26,7 +26,7 @@ public class PropertyUtils {
         for (String propertyName: properties.stringPropertyNames()) {
             if (propertyName.startsWith(prefix)) {
                 String propertyValue = properties.getProperty(propertyName);
-                subProperties.setProperty(propertyName, propertyValue.substring(prefix.length()));
+                subProperties.setProperty(propertyName, propertyValue.substring(prefix.length() - 1));
             }
         }
         return subProperties;
