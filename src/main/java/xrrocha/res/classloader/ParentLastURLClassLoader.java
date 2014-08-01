@@ -6,7 +6,7 @@ import java.net.URLClassLoader;
 
 import static xrrocha.res.util.ClassLoaderUtils.findJarLibraries;
 
-// TODO Verify resource loading
+// FIXME Resource finding is broken!
 // TODO Add closing of jar files
 public class ParentLastURLClassLoader extends URLClassLoader {
     private ClassLoader parent;
